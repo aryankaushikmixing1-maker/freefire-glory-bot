@@ -1,35 +1,24 @@
 import discord
 from discord.ext import commands
 import os
-from flask import Flask
-from threading import Thread
+from dotenv import load_dotenv
 
-app = Flask('')
-
-@app.route('/')
-def home():
-    return "Free Fire Glory Bot 24/7 Online! 🔥"
-
-def run_flask():
-    app.run(host='0.0.0.0', port=8080)
-
-bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+load_dotenv()
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user} GLORY BOT LIVE! 🏆')
+    print(f'{bot.user} online!')
+    await bot.change_presence(activity=discord.Game(name="!help"))
 
 @bot.command()
-async def glory(ctx, points: int = 10):
-    await ctx.send(f"🏆 **{ctx.author.display_name}** ko **{points} GLORY POINTS** mile! 💎")
+async def ping(ctx):
+    await ctx.send(f'Pong! {round(bot.latency*1000)}ms')
 
 @bot.command()
-async def leaderboard(ctx):
-    await ctx.send("🏆 **TOP 5 GLORY KINGS:**\n1. BooyahMaster - 5000\n2. HeadshotKing - 4500\n3. ProGamer - 4200")
+async def hello(ctx):
+    await ctx.send(f'Hello {ctx.author.mention}!')
 
-@bot.command()
-async def helpme(ctx):
-    await ctx.send("**Commands:** `!glory 50` `!leaderboard` `!helpme`")
-
-Thread(target=run_flask).start()
-bot.run(os.getenv('MTQ3NjI5MjE1Mjg2OTkxMjY3Ng.Gy2ifG.8K5El6rUQuvWDW8MNvacL09LJaGvFMh7w5q124'))
+bot.run(os.getenv('DISCORD_TOKEN'))
